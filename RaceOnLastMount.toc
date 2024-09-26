@@ -1,0 +1,17 @@
+## Interface: 110002
+## Version: @project-version@
+## Title: Race on Last Mount
+## Author: LudiusMaximus
+## Notes: Automatically mount the last used flying mount when starting a skyriding race.
+
+## SavedVariables: lastMount
+
+## X-Curse-Project-ID: 1109956
+## X-WoWI-ID: 26855
+
+## X-Donate: PayPal:ludiusmaximus@gmail.com
+## X-License: The MIT License (MIT)
+
+
+main.lua
+
