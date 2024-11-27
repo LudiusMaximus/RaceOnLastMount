@@ -1,8 +1,6 @@
 
 
-
--- Saved variable.
-lastMount = lastMount or {}
+local lastMount = {}
 
 
 
@@ -131,21 +129,20 @@ end
 
 
 
-
-local initFrame = CreateFrame("Frame")
-initFrame:SetScript("OnEvent", function(_, _, isInitialLogin, isReloadingUi)
-  if isInitialLogin or isReloadingUi then
-    -- print("Creating flying mount list.")
-    CreateFlyingMounts()
-  end
-end)
-initFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-
-
-
 local summoningLastMount = nil
 local mountingFrame = CreateFrame("Frame")
-mountingFrame:SetScript("OnEvent", function()
+mountingFrame:SetScript("OnEvent", function(_, event)
+
+  if event == "PLAYER_ENTERING_WORLD" then
+    -- print("Creating flying mount list.")
+    CreateFlyingMounts()
+    
+    ROLM_lastMount = ROLM_lastMount or {}
+    ROLM_lastMount[GetRealmName()] = ROLM_lastMount[GetRealmName()] or {}
+    ROLM_lastMount[GetRealmName()][UnitName("player")] = ROLM_lastMount[GetRealmName()][UnitName("player")] or {}
+    lastMount = ROLM_lastMount[GetRealmName()][UnitName("player")]
+    
+  end
 
   -- print("Check mounted status.", lastMount.flying)
   
