@@ -1,8 +1,34 @@
-
-
+-- To be mapped to saved variable.
 local lastMount = {}
 
+local C_MountJournal_GetCollectedFilterSetting = C_MountJournal.GetCollectedFilterSetting
+local C_MountJournal_IsTypeChecked = C_MountJournal.IsTypeChecked
+local C_MountJournal_IsValidSourceFilter = C_MountJournal.IsValidSourceFilter
+local C_MountJournal_IsSourceChecked = C_MountJournal.IsSourceChecked
+local C_MountJournal_SetDefaultFilters = C_MountJournal.SetDefaultFilters
+local C_MountJournal_SetCollectedFilterSetting = C_MountJournal.SetCollectedFilterSetting
+local C_MountJournal_SetTypeFilter = C_MountJournal.SetTypeFilter
+local C_MountJournal_GetNumDisplayedMounts = C_MountJournal.GetNumDisplayedMounts
+local C_MountJournal_GetDisplayedMountInfo = C_MountJournal.GetDisplayedMountInfo
+local C_MountJournal_SetSourceFilter = C_MountJournal.SetSourceFilter
+local C_MountJournal_GetMountInfoByID = C_MountJournal.GetMountInfoByID
+local C_MountJournal_GetMountIDs = C_MountJournal.GetMountIDs
+local C_MountJournal_SummonByID = C_MountJournal.SummonByID
 
+local C_PetJournal_GetNumPetSources = C_PetJournal.GetNumPetSources
+
+local C_Timer_After = C_Timer.After
+
+local Enum_MountTypeMeta_NumValues = Enum.MountTypeMeta.NumValues
+
+local LE_MOUNT_JOURNAL_FILTER_COLLECTED     = LE_MOUNT_JOURNAL_FILTER_COLLECTED
+local LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED = LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED
+local LE_MOUNT_JOURNAL_FILTER_UNUSABLE      = LE_MOUNT_JOURNAL_FILTER_UNUSABLE
+
+local IsMounted = IsMounted
+local GetRealmName = GetRealmName
+local UnitName = UnitName
+local pairs = pairs
 
 
 -- List of all flying mounts. Created when entering world.
@@ -13,34 +39,34 @@ local function CreateFlyingMounts()
   -- Store current mount journal filter settings for later restoring.
 
   local collectedFilters = {}
-  collectedFilters[LE_MOUNT_JOURNAL_FILTER_COLLECTED] = C_MountJournal.GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_COLLECTED)
-  collectedFilters[LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED] = C_MountJournal.GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED)
-  collectedFilters[LE_MOUNT_JOURNAL_FILTER_UNUSABLE] = C_MountJournal.GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_UNUSABLE)
+  collectedFilters[LE_MOUNT_JOURNAL_FILTER_COLLECTED] = C_MountJournal_GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_COLLECTED)
+  collectedFilters[LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED] = C_MountJournal_GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED)
+  collectedFilters[LE_MOUNT_JOURNAL_FILTER_UNUSABLE] = C_MountJournal_GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_UNUSABLE)
 
   local typeFilters = {}
-  for filterIndex = 1, Enum.MountTypeMeta.NumValues do
-    typeFilters[filterIndex] = C_MountJournal.IsTypeChecked(filterIndex)
+  for filterIndex = 1, Enum_MountTypeMeta_NumValues do
+    typeFilters[filterIndex] = C_MountJournal_IsTypeChecked(filterIndex)
   end
 
   local sourceFilters = {}
-  for filterIndex = 1, C_PetJournal.GetNumPetSources() do
-    if C_MountJournal.IsValidSourceFilter(filterIndex) then
-      sourceFilters[filterIndex] = C_MountJournal.IsSourceChecked(filterIndex)
+  for filterIndex = 1, C_PetJournal_GetNumPetSources() do
+    if C_MountJournal_IsValidSourceFilter(filterIndex) then
+      sourceFilters[filterIndex] = C_MountJournal_IsSourceChecked(filterIndex)
     end
   end
 
 
   -- Set filters to flying mounts.
   
-  C_MountJournal.SetDefaultFilters()
-  C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_UNUSABLE, true)  -- Include unusable.
-  C_MountJournal.SetTypeFilter(1, false)   -- No Ground.
-  C_MountJournal.SetTypeFilter(3, false)   -- No Aquatic.
+  C_MountJournal_SetDefaultFilters()
+  C_MountJournal_SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_UNUSABLE, true)  -- Include unusable.
+  C_MountJournal_SetTypeFilter(1, false)   -- No Ground.
+  C_MountJournal_SetTypeFilter(3, false)   -- No Aquatic.
 
   -- Fill list of flying mount IDs.
   flyingMounts = {}
-  for displayIndex = 1, C_MountJournal.GetNumDisplayedMounts() do
-    local mountId = select(12, C_MountJournal.GetDisplayedMountInfo(displayIndex))
+  for displayIndex = 1, C_MountJournal_GetNumDisplayedMounts() do
+    local mountId = select(12, C_MountJournal_GetDisplayedMountInfo(displayIndex))
     -- print(displayIndex, mountId)
     flyingMounts[mountId] = true
   end
@@ -48,17 +74,17 @@ local function CreateFlyingMounts()
 
   -- Restore the mount journal filter settings.
 
-  C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_COLLECTED, collectedFilters[LE_MOUNT_JOURNAL_FILTER_COLLECTED])
-  C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED, collectedFilters[LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED])
-  C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_UNUSABLE, collectedFilters[LE_MOUNT_JOURNAL_FILTER_UNUSABLE])
+  C_MountJournal_SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_COLLECTED, collectedFilters[LE_MOUNT_JOURNAL_FILTER_COLLECTED])
+  C_MountJournal_SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED, collectedFilters[LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED])
+  C_MountJournal_SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_UNUSABLE, collectedFilters[LE_MOUNT_JOURNAL_FILTER_UNUSABLE])
 
-  for filterIndex = 1, Enum.MountTypeMeta.NumValues do
-    C_MountJournal.SetTypeFilter(filterIndex, typeFilters[filterIndex])
+  for filterIndex = 1, Enum_MountTypeMeta_NumValues do
+    C_MountJournal_SetTypeFilter(filterIndex, typeFilters[filterIndex])
   end
 
-  for filterIndex = 1, C_PetJournal.GetNumPetSources() do
-    if C_MountJournal.IsValidSourceFilter(filterIndex) then
-      C_MountJournal.SetSourceFilter(filterIndex, sourceFilters[filterIndex])
+  for filterIndex = 1, C_PetJournal_GetNumPetSources() do
+    if C_MountJournal_IsValidSourceFilter(filterIndex) then
+      C_MountJournal_SetSourceFilter(filterIndex, sourceFilters[filterIndex])
     end
   end
 
@@ -91,7 +117,7 @@ local function GetCurrentMountIfFlying(noUpdate)
   if not IsMounted() then return nil end
 
   if lastMount.flying then
-    local _, _, _, active = C_MountJournal.GetMountInfoByID(lastMount.flying)
+    local _, _, _, active = C_MountJournal_GetMountInfoByID(lastMount.flying)
     if active then
       return lastMount.flying
     end
@@ -99,15 +125,15 @@ local function GetCurrentMountIfFlying(noUpdate)
   
   -- Also storing last non-flying mount for efficiency.
   if lastMount.not_flying then
-    local _, _, _, active = C_MountJournal.GetMountInfoByID(lastMount.not_flying)
+    local _, _, _, active = C_MountJournal_GetMountInfoByID(lastMount.not_flying)
     if active then
       return nil
     end
   end
 
   -- Got to search for "new" mount.
-  for _, v in pairs(C_MountJournal.GetMountIDs()) do
-    local _, _, _, active = C_MountJournal.GetMountInfoByID(v)
+  for _, v in pairs(C_MountJournal_GetMountIDs()) do
+    local _, _, _, active = C_MountJournal_GetMountInfoByID(v)
     if active then
       if flyingMounts[v] then
         if not noUpdate then 
@@ -137,10 +163,13 @@ mountingFrame:SetScript("OnEvent", function(_, event)
     -- print("Creating flying mount list.")
     CreateFlyingMounts()
     
+    local realmName = GetRealmName()
+    local playerName = UnitName("player")
+    
     ROLM_lastMount = ROLM_lastMount or {}
-    ROLM_lastMount[GetRealmName()] = ROLM_lastMount[GetRealmName()] or {}
-    ROLM_lastMount[GetRealmName()][UnitName("player")] = ROLM_lastMount[GetRealmName()][UnitName("player")] or {}
-    lastMount = ROLM_lastMount[GetRealmName()][UnitName("player")]
+    ROLM_lastMount[realmName] = ROLM_lastMount[realmName] or {}
+    ROLM_lastMount[realmName][playerName] = ROLM_lastMount[realmName][playerName] or {}
+    lastMount = ROLM_lastMount[realmName][playerName]
     
   end
 
@@ -155,7 +184,7 @@ mountingFrame:SetScript("OnEvent", function(_, event)
       summoningLastMount = true
       -- print("Summon last mount after delay!")
       -- Got to delay because the game will switch back to the Protodrake within the first 2 seconds.
-      C_Timer.After(2, function() C_MountJournal.SummonByID(lastMount.flying) end)
+      C_Timer_After(2, function() C_MountJournal_SummonByID(lastMount.flying) end)
     end
     
   end
