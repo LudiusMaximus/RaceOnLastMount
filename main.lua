@@ -57,7 +57,7 @@ local function CreateFlyingMounts()
 
 
   -- Set filters to flying mounts.
-  
+
   C_MountJournal_SetDefaultFilters()
   C_MountJournal_SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_UNUSABLE, true)  -- Include unusable.
   C_MountJournal_SetTypeFilter(1, false)   -- No Ground.
@@ -122,7 +122,7 @@ local function GetCurrentMountIfFlying(noUpdate)
       return lastMount.flying
     end
   end
-  
+
   -- Also storing last non-flying mount for efficiency.
   if lastMount.not_flying then
     local _, _, _, active = C_MountJournal_GetMountInfoByID(lastMount.not_flying)
@@ -136,7 +136,7 @@ local function GetCurrentMountIfFlying(noUpdate)
     local _, _, _, active = C_MountJournal_GetMountInfoByID(v)
     if active then
       if flyingMounts[v] then
-        if not noUpdate then 
+        if not noUpdate then
           lastMount.flying = v
         end
         return v
@@ -147,7 +147,7 @@ local function GetCurrentMountIfFlying(noUpdate)
       end
     end
   end
-  
+
   -- Should never happen, because we checked that we are mounted in the beginning.
   -- But apparently happens sometimes at login...
   return nil
@@ -157,41 +157,43 @@ end
 
 local summoningLastMount = nil
 local mountingFrame = CreateFrame("Frame")
-mountingFrame:SetScript("OnEvent", function(_, event)
+mountingFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+mountingFrame:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
+mountingFrame:SetScript("OnEvent", function(_, event, ...)
 
   if event == "PLAYER_ENTERING_WORLD" then
-    -- print("Creating flying mount list.")
-    CreateFlyingMounts()
-    
-    local realmName = GetRealmName()
-    local playerName = UnitName("player")
-    
-    ROLM_lastMount = ROLM_lastMount or {}
-    ROLM_lastMount[realmName] = ROLM_lastMount[realmName] or {}
-    ROLM_lastMount[realmName][playerName] = ROLM_lastMount[realmName][playerName] or {}
-    lastMount = ROLM_lastMount[realmName][playerName]
-    
+    local isLogin, isReload = ...
+    if isLogin or isReload then
+      -- print("Creating flying mount list.")
+      CreateFlyingMounts()
+
+      local realmName = GetRealmName()
+      local playerName = UnitName("player")
+
+      ROLM_lastMount = ROLM_lastMount or {}
+      ROLM_lastMount[realmName] = ROLM_lastMount[realmName] or {}
+      ROLM_lastMount[realmName][playerName] = ROLM_lastMount[realmName][playerName] or {}
+      lastMount = ROLM_lastMount[realmName][playerName]
+    end
   end
 
   -- print("Check mounted status.", lastMount.flying)
-  
+
   local currentMount = GetCurrentMountIfFlying(preRacePhase)
-  
+
   if preRacePhase and currentMount and currentMount ~= lastMount.flying then
     -- print("Not the last mount!!", currentMount, lastMount.flying)
-    
+
     if not summoningLastMount then
       summoningLastMount = true
       -- print("Summon last mount after delay!")
       -- Got to delay because the game will switch back to the Protodrake within the first 2 seconds.
       C_Timer_After(2, function() C_MountJournal_SummonByID(lastMount.flying) end)
     end
-    
   end
-  
+
 end)
-mountingFrame:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
-mountingFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+
 
 
 
@@ -199,10 +201,10 @@ local unitAuraFrame = CreateFrame("Frame")
 unitAuraFrame:SetScript("OnEvent", function(_, _, unitTarget, updateInfo)
 
   if unitTarget ~= "player" then return end
-  
+
   if updateInfo and updateInfo.addedAuras then
     -- print("adding aura")
-    
+
     for _, v in pairs(updateInfo.addedAuras) do
       -- print("   ", v.spellId)
       if v.spellId then
@@ -220,6 +222,6 @@ unitAuraFrame:SetScript("OnEvent", function(_, _, unitTarget, updateInfo)
     end
 
   end
-  
+
 end)
 unitAuraFrame:RegisterEvent("UNIT_AURA")
