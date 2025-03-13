@@ -6,6 +6,7 @@
 ## SavedVariables: ROLM_lastMount
 ## X-Curse-Project-ID: 1109956
 ## X-WoWI-ID: 26855
+## X-Wago-ID: kGr0xx6y
 ## X-Donate: PayPal:ludiusmaximus@gmail.com
 ## X-License: The MIT License (MIT)
 
