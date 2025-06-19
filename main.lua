@@ -3,6 +3,7 @@ local lastMount = {}
 
 local C_MountJournal_GetCollectedFilterSetting = C_MountJournal.GetCollectedFilterSetting
 local C_MountJournal_IsTypeChecked = C_MountJournal.IsTypeChecked
+local C_MountJournal_IsValidTypeFilter = C_MountJournal.IsValidTypeFilter
 local C_MountJournal_IsValidSourceFilter = C_MountJournal.IsValidSourceFilter
 local C_MountJournal_IsSourceChecked = C_MountJournal.IsSourceChecked
 local C_MountJournal_SetDefaultFilters = C_MountJournal.SetDefaultFilters
@@ -45,7 +46,9 @@ local function CreateFlyingMounts()
 
   local typeFilters = {}
   for filterIndex = 1, Enum_MountTypeMeta_NumValues do
-    typeFilters[filterIndex] = C_MountJournal_IsTypeChecked(filterIndex)
+    if C_MountJournal_IsValidTypeFilter(filterIndex) then
+      typeFilters[filterIndex] = C_MountJournal_IsTypeChecked(filterIndex)
+    end
   end
 
   local sourceFilters = {}
@@ -62,6 +65,7 @@ local function CreateFlyingMounts()
   C_MountJournal_SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_UNUSABLE, true)  -- Include unusable.
   C_MountJournal_SetTypeFilter(1, false)   -- No Ground.
   C_MountJournal_SetTypeFilter(3, false)   -- No Aquatic.
+  -- Filter index 5 is "Ride Along", which is automatically flying, so we can ignore it.
 
   -- Fill list of flying mount IDs.
   flyingMounts = {}
@@ -74,16 +78,24 @@ local function CreateFlyingMounts()
 
   -- Restore the mount journal filter settings.
 
-  C_MountJournal_SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_COLLECTED, collectedFilters[LE_MOUNT_JOURNAL_FILTER_COLLECTED])
-  C_MountJournal_SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED, collectedFilters[LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED])
-  C_MountJournal_SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_UNUSABLE, collectedFilters[LE_MOUNT_JOURNAL_FILTER_UNUSABLE])
+  if collectedFilters[LE_MOUNT_JOURNAL_FILTER_COLLECTED] ~= C_MountJournal_GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_COLLECTED) then
+    C_MountJournal_SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_COLLECTED, collectedFilters[LE_MOUNT_JOURNAL_FILTER_COLLECTED])
+  end
+  if collectedFilters[LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED] ~= C_MountJournal_GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED) then
+    C_MountJournal_SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED, collectedFilters[LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED])
+  end
+  if collectedFilters[LE_MOUNT_JOURNAL_FILTER_UNUSABLE] ~= C_MountJournal_GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_UNUSABLE) then
+    C_MountJournal_SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_UNUSABLE, collectedFilters[LE_MOUNT_JOURNAL_FILTER_UNUSABLE])
+  end
 
   for filterIndex = 1, Enum_MountTypeMeta_NumValues do
-    C_MountJournal_SetTypeFilter(filterIndex, typeFilters[filterIndex])
+    if C_MountJournal_IsValidTypeFilter(filterIndex) and typeFilters[filterIndex] ~= C_MountJournal_IsTypeChecked(filterIndex) then
+      C_MountJournal_SetTypeFilter(filterIndex, typeFilters[filterIndex])
+    end
   end
 
   for filterIndex = 1, C_PetJournal_GetNumPetSources() do
-    if C_MountJournal_IsValidSourceFilter(filterIndex) then
+    if C_MountJournal_IsValidSourceFilter(filterIndex) and sourceFilters[filterIndex] ~= C_MountJournal_IsSourceChecked(filterIndex) then
       C_MountJournal_SetSourceFilter(filterIndex, sourceFilters[filterIndex])
     end
   end
