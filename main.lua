@@ -169,7 +169,7 @@ end
 
 local summoningLastMount = nil
 local mountingFrame = CreateFrame("Frame")
-mountingFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+mountingFrame:RegisterEvent("PLAYER_LOGIN")
 mountingFrame:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
 mountingFrame:SetScript("OnEvent", function(_, event, ...)
 
