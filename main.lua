@@ -173,20 +173,17 @@ mountingFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 mountingFrame:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
 mountingFrame:SetScript("OnEvent", function(_, event, ...)
 
-  if event == "PLAYER_ENTERING_WORLD" then
-    local isLogin, isReload = ...
-    if isLogin or isReload then
-      -- print("Creating flying mount list.")
-      CreateFlyingMounts()
+  if event == "PLAYER_LOGIN" then
+    -- print("Creating flying mount list.")
+    CreateFlyingMounts()
 
-      local realmName = GetRealmName()
-      local playerName = UnitName("player")
+    local realmName = GetRealmName()
+    local playerName = UnitName("player")
 
-      ROLM_lastMount = ROLM_lastMount or {}
-      ROLM_lastMount[realmName] = ROLM_lastMount[realmName] or {}
-      ROLM_lastMount[realmName][playerName] = ROLM_lastMount[realmName][playerName] or {}
-      lastMount = ROLM_lastMount[realmName][playerName]
-    end
+    ROLM_lastMount = ROLM_lastMount or {}
+    ROLM_lastMount[realmName] = ROLM_lastMount[realmName] or {}
+    ROLM_lastMount[realmName][playerName] = ROLM_lastMount[realmName][playerName] or {}
+    lastMount = ROLM_lastMount[realmName][playerName]
   end
 
   -- print("Check mounted status.", lastMount.flying)
