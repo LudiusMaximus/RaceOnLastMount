@@ -1,6 +1,7 @@
-## Interface: 110107
+## Interface: 110200
 ## Version: @project-version@
 ## Title: Race on Last Mount
+## IconAtlas: racing
 ## Author: LudiusMaximus
 ## Notes: Automatically mount the last used flying mount when starting a skyriding race.
 ## SavedVariables: ROLM_lastMount
