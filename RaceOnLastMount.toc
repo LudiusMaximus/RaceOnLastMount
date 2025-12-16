@@ -1,10 +1,11 @@
 ## Interface: 110207
 ## Version: @project-version@
-## Title: Race on Last Mount
+## Title: Race on Last Mount (DISCONTINUED)
 ## IconAtlas: racing
 ## Author: LudiusMaximus
-## Notes: Automatically mount the last used flying mount when starting a skyriding race.
+## Notes: DISCONTINUED: Functionality has been moved to the addon Ludius Plus. Please install Ludius Plus. The Race on Last Mount addon can be removed.
 ## SavedVariables: ROLM_lastMount
+## OptionalDeps: LudiusPlus
 ## X-Curse-Project-ID: 1109956
 ## X-WoWI-ID: 26855
 ## X-Wago-ID: kGr0xx6y

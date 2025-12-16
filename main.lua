@@ -1,3 +1,19 @@
+-- Check if LudiusPlus is loaded (which includes this functionality)
+if C_AddOns.IsAddOnLoaded("LudiusPlus") then
+  print("|cffff8800The functionality of the \"Race On Last Mount\" addon is now included in \"Ludius Plus\". You can delete the standalone \"Race On Last Mount\" addon.|r")
+  -- Enable the RaceOnLastMount module in LudiusPlus if it's not already enabled
+  if LP_config and not LP_config.raceOnLastMount_enabled then
+    LP_config.raceOnLastMount_enabled = true
+    print("|cffff8800Enabled \"Race on Last Mount\" module in \"Ludius Plus\".|r")
+  end
+  
+  C_AddOns.DisableAddOn("RaceOnLastMount")
+  return
+end
+
+-- Show recommendation to move to LudiusPlus
+print("|cffff8800\"Race On Last Mount\" functionality is now included in \"Ludius Plus\". Consider installing \"Ludius Plus\" for this and other useful features.|r")
+
 -- To be mapped to saved variable.
 local lastMount = {}
 
